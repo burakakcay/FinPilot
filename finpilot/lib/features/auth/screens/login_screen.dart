@@ -1,3 +1,4 @@
+import 'package:finpilot/features/auth/screens/register_screen.dart';
 import 'package:finpilot/features/auth/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +11,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // Form alanlarının değerlerini okumak ve yaşam döngüsünde temizlemek için kullanılır.
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   bool obscurePassword = true;
 
+  // Firebase Authentication çağrılarını tek noktadan yürütür.
   final AuthService authService = AuthService();
 
   bool isLoading = false;
@@ -32,6 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     setState(() {
+      // Aynı anda birden fazla giriş isteğini engeller.
       isLoading = true;
       errorMessage = null;
     });
@@ -45,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
         context,
       ).showSnackBar(const SnackBar(content: Text('Giriş başarılı!')));
     } on FirebaseAuthException catch (e) {
+      // Firebase hata kodunu kullanıcıya gösterilecek mesaja dönüştürür.
       setState(() {
         errorMessage = _getFirebaseErrorMessage(e.code);
       });
@@ -57,6 +62,50 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> resetPassword() async {
+    final email = emailController.text.trim();
+
+    if (email.isEmpty) {
+      setState(() {
+        errorMessage = 'Şifre sıfırlamak için e-posta adresinizi girin.';
+      });
+      return;
+    }
+
+    setState(() {
+      // İstek tamamlanana kadar giriş ve sıfırlama butonlarını devre dışı bırakır.
+      isLoading = true;
+      errorMessage = null;
+    });
+
+    try {
+      await authService.resetPassword(email: email);
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.',
+          ),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        errorMessage = _getFirebaseErrorMessage(e.code);
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  // Controller kaynaklarını ekran kaldırıldığında serbest bırakır.
   @override
   void dispose() {
     emailController.dispose();
@@ -148,12 +197,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: isLoading ? null : resetPassword,
                     child: const Text('Şifremi unuttum'),
                   ),
                 ),
 
                 const SizedBox(height: 16),
+
+                if (errorMessage != null) ...[
+                  Text(
+                    errorMessage!,
+                    style: TextStyle(color: theme.colorScheme.error),
+                  ),
+                  const SizedBox(height: 12),
+                ],
 
                 SizedBox(
                   height: 52,
@@ -175,7 +232,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text('Hesabınız yok mu?'),
-                    TextButton(onPressed: () {}, child: const Text('Kayıt Ol')),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text('Kayıt Ol'),
+                    ),
                   ],
                 ),
               ],
@@ -187,6 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   String _getFirebaseErrorMessage(String code) {
+    // Firebase'in teknik hata kodlarını anlaşılır Türkçe mesajlara çevirir.
     switch (code) {
       case 'invalid-email':
         return 'Geçersiz e-posta adresi.';
