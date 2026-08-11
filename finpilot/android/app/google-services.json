@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "487718155663",
+    "project_id": "finpilot-d17ee",
+    "storage_bucket": "finpilot-d17ee.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:487718155663:android:2074b285e6d2f388f007fa",
+        "android_client_info": {
+          "package_name": "com.example.finpilot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI5aXm_55sSfcywtaq6mCLomaoXoxhT1s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
