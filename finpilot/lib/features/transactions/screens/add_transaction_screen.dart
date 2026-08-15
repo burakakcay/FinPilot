@@ -78,7 +78,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final transaction = TransactionModel(
       id:
           widget.transaction?.id ??
-          DateTime.now().microsecondsSinceEpoch.toString(),      
+          DateTime.now().microsecondsSinceEpoch.toString(),
       title: titleController.text.trim(),
       amount: double.parse(amountController.text.trim().replaceAll(',', '.')),
       type: selectedType,
@@ -292,8 +292,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           : const Icon(Icons.save_outlined),
                       label: Text(
                         isSaving
-                          ? 'Kaydediliyor...'
-                          : widget.transaction == null
+                            ? 'Kaydediliyor...'
+                            : widget.transaction == null
                             ? 'Kaydet'
                             : 'Güncelle',
                       ),

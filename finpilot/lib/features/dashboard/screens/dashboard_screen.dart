@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:finpilot/features/auth/services/auth_service.dart';
+import 'package:finpilot/features/budgets/screens/budget_screen.dart';
 import 'package:finpilot/features/transactions/screens/add_transaction_screen.dart';
 import 'package:finpilot/features/transactions/services/transaction_service.dart';
 import 'package:finpilot/shared/models/transaction_model.dart';
@@ -126,6 +127,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: const Text('FinPilot Dashboard'),
         actions: [
+          IconButton(
+            tooltip: 'Bütçelerim',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => BudgetScreen()),
+              );
+            },
+            icon: const Icon(Icons.account_balance_wallet_outlined),
+          ),
           TextButton.icon(
             onPressed: isLoading ? null : logout,
             icon: isLoading
