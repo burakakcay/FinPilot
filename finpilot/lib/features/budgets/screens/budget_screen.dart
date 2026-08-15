@@ -33,6 +33,50 @@ class BudgetScreen extends StatelessWidget {
     return '₺${amount.toStringAsFixed(2).replaceAll('.', ',')}';
   }
 
+  Future<void> deleteBudget(BuildContext context, BudgetModel budget) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Bütçe silinsin mi?'),
+          content: Text('${budget.category} kategorisinin bütçesi silinecek.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, false);
+              },
+              child: const Text('Vazgeç'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, true);
+              },
+              child: const Text('Sil'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldDelete != true || !context.mounted) return;
+
+    try {
+      await budgetService.deleteBudget(budget.id);
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${budget.category} bütçesi silindi')),
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bütçe silinirken bir hata oluştu.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -107,11 +151,28 @@ class BudgetScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              Text(
-                                '${budget.month.month.toString().padLeft(2, '0')}/'
-                                '${budget.month.year}',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
+                              const SizedBox(width: 8),
+                              IconButton(
+                                tooltip: 'Bütçeyi Düzenle',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          AddBudgetScreen(budget: budget),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.edit_outlined),
+                              ),
+                              IconButton(
+                                tooltip: 'Bütçeyi Sil',
+                                onPressed: () {
+                                  deleteBudget(context, budget);
+                                },
+                                icon: Icon(
+                                  Icons.delete_forever_outlined,
+                                  color: theme.colorScheme.error,
                                 ),
                               ),
                             ],

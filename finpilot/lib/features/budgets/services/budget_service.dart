@@ -20,6 +20,14 @@ class BudgetService {
     await _budgetsCollection.doc(budget.id).set(budget.toMap());
   }
 
+  Future<void> updateBudget(BudgetModel budget) async {
+    await _budgetsCollection.doc(budget.id).update(budget.toMap());
+  }
+
+  Future<void> deleteBudget(String budgetId) async {
+    await _budgetsCollection.doc(budgetId).delete();
+  }
+
   Stream<List<BudgetModel>> watchBudgets() {
     return _budgetsCollection
         .orderBy('month', descending: true)

@@ -4,7 +4,9 @@ import 'package:finpilot/shared/models/transaction_model.dart';
 import 'package:flutter/material.dart';
 
 class AddBudgetScreen extends StatefulWidget {
-  const AddBudgetScreen({super.key});
+  final BudgetModel? budget;
+
+  const AddBudgetScreen({super.key, this.budget});
 
   @override
   State<AddBudgetScreen> createState() => _AddBudgetScreenState();
@@ -25,7 +27,15 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
   void initState() {
     super.initState();
 
-    selectedCategory = TransactionCategories.expense.first;
+    final budget = widget.budget;
+
+    if (budget != null) {
+      selectedCategory = budget.category;
+      limitController.text = budget.limit.toString();
+      selectedMonth = budget.month;
+    } else {
+      selectedCategory = TransactionCategories.expense.first;
+    }
 
     final now = DateTime.now();
     selectedMonth = DateTime(now.year, now.month);
@@ -56,7 +66,7 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final budget = BudgetModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: widget.budget?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
       category: selectedCategory,
       limit: double.parse(limitController.text.trim().replaceAll(',', '.')),
       month: selectedMonth,
@@ -68,7 +78,11 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
     });
 
     try {
-      await budgetService.addBudget(budget);
+      if (widget.budget == null) {
+        await budgetService.addBudget(budget);
+      } else {
+        await budgetService.updateBudget(budget);
+      }
 
       if (!mounted) return;
 
@@ -93,7 +107,9 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Bütçe Ekle')),
+      appBar: AppBar(
+        title: Text(widget.budget == null ? 'Bütçe Ekle' : 'Bütçe Düzenle'),
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -105,7 +121,7 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Yeni Bütçe',
+                    widget.budget == null ? 'Yeni Bütçe' : 'Bütçeyi Düzenle',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -194,7 +210,11 @@ class _AddBudgetScreenState extends State<AddBudgetScreen> {
                             )
                           : const Icon(Icons.save_outlined),
                       label: Text(
-                        isSaving ? 'Kaydediliyor...' : 'Bütçeyi Kaydet',
+                        isSaving
+                            ? 'Kaydediliyor...'
+                            : widget.budget == null
+                            ? 'Bütçeyi Kaydet'
+                            : 'Bütçeyi Düzenle',
                       ),
                     ),
                   ),
