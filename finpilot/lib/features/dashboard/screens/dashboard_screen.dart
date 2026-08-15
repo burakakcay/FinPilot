@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:finpilot/features/auth/services/auth_service.dart';
 import 'package:finpilot/features/transactions/screens/add_transaction_screen.dart';
+import 'package:finpilot/features/transactions/services/transaction_service.dart';
 import 'package:finpilot/shared/models/transaction_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,10 +16,37 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final AuthService authService = AuthService();
+  final TransactionService transactionService = TransactionService();
   final List<TransactionModel> transactions = [];
+
+  late final StreamSubscription<List<TransactionModel>>
+  transactionsSubscription;
 
   bool isLoading = false;
   String? hoveredTransactionId;
+
+  @override
+  void initState() {
+    super.initState();
+
+    transactionsSubscription = transactionService.watchTransactions().listen((
+      transactionsFromFirestore,
+    ) {
+      if (!mounted) return;
+
+      setState(() {
+        transactions
+          ..clear()
+          ..addAll(transactionsFromFirestore);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    transactionsSubscription.cancel();
+    super.dispose();
+  }
 
   // Gelir işlemlerinin toplam tutarını hesaplar.
   double get totalIncome {
@@ -36,32 +66,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
   double get balance => totalIncome - totalExpense;
 
   String formatMoney(double amount) {
-    return '₺${amount.toStringAsFixed(2).replaceAll('.', ',')}';
+    final formattedAmount = amount
+        .abs()
+        .toStringAsFixed(2)
+        .replaceAll('.', ',');
+
+    return amount < 0 ? '- ₺$formattedAmount' : '₺$formattedAmount';
   }
 
   // İşlem formunu açar ve kaydedilen işlemi geçici listeye ekler.
   Future<void> openAddTransaction() async {
-    final transaction = await Navigator.push<TransactionModel>(
+    await Navigator.push<TransactionModel>(
       context,
       MaterialPageRoute(builder: (context) => const AddTransactionScreen()),
     );
-
-    if (transaction == null || !mounted) return;
-
-    setState(() {
-      transactions.insert(0, transaction);
-    });
   }
 
   // Seçilen işlemi listeden kaldırır ve toplamları otomatik günceller.
-  void deleteTransaction(TransactionModel transaction) {
-    setState(() {
-      transactions.removeWhere((item) => item.id == transaction.id);
-    });
+  void deleteTransaction(TransactionModel transaction) async {
+    try {
+      await transactionService.deleteTransaction(transaction.id);
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('${transaction.title} silindi.')));
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${transaction.title} silindi.')));
+    } catch (_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('İşlem silinirken bir hata oluştu.')),
+      );
+    }
   }
 
   // Firebase oturumunu kapatır; AuthGate aktifken Login ekranına dönülür.
@@ -203,8 +240,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  '${isIncome ? '+' : '-'}'
-                                  '${formatMoney(transaction.amount)}',
+                                  '${isIncome ? '+' : '-'} ${formatMoney(transaction.amount)}',
                                   style: TextStyle(
                                     color: isIncome
                                         ? Colors.green
@@ -214,6 +250,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 if (!kIsWeb ||
                                     hoveredTransactionId == transaction.id) ...[
+                                  const SizedBox(width: 8),
+                                  IconButton(
+                                    tooltip: 'İşlemi Düzenle',
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AddTransactionScreen(
+                                                transaction: transaction,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.edit_outlined),
+                                  ),
                                   const SizedBox(width: 8),
                                   IconButton(
                                     tooltip: 'İşlemi Sil',

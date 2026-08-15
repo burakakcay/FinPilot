@@ -1,5 +1,6 @@
 import 'package:finpilot/features/auth/screens/auth_gate.dart';
 import 'package:finpilot/features/dashboard/screens/dashboard_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -13,10 +14,12 @@ Future<void> main() async {
   // Firebase bağlantısını platforma ait yapılandırma ile başlatır.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
+
   runApp(const FinPilotApp());
 }
 
-const bool bypassAuthentication = true;
+const bool bypassAuthentication = false;
 
 class FinPilotApp extends StatelessWidget {
   const FinPilotApp({super.key});

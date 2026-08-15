@@ -1,8 +1,11 @@
+import 'package:finpilot/features/transactions/services/transaction_service.dart';
 import 'package:finpilot/shared/models/transaction_model.dart';
 import 'package:flutter/material.dart';
 
 class AddTransactionScreen extends StatefulWidget {
-  const AddTransactionScreen({super.key});
+  final TransactionModel? transaction;
+
+  const AddTransactionScreen({super.key, this.transaction});
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -15,6 +18,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final amountController = TextEditingController();
   final noteController = TextEditingController();
 
+  final TransactionService transactionService = TransactionService();
+
+  bool isSaving = false;
+  String? errorMessage;
+
   TransactionType selectedType = TransactionType.expense;
   late String selectedCategory;
   DateTime selectedDate = DateTime.now();
@@ -23,7 +31,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   void initState() {
     super.initState();
-    selectedCategory = TransactionCategories.expense.first;
+
+    final transaction = widget.transaction;
+
+    if (transaction != null) {
+      titleController.text = transaction.title;
+      amountController.text = transaction.amount.toString();
+      noteController.text = transaction.note ?? '';
+      selectedType = transaction.type;
+      selectedCategory = transaction.category;
+      selectedDate = transaction.date;
+    } else {
+      selectedCategory = TransactionCategories.expense.first;
+    }
   }
 
   // Form controller kaynaklarını ekran kapandığında serbest bırakır.
@@ -52,11 +72,13 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   // Formu doğrular, işlem modelini oluşturur ve dashboard'a geri gönderir.
-  void saveTransaction() {
+  Future<void> saveTransaction() async {
     if (!_formKey.currentState!.validate()) return;
 
     final transaction = TransactionModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id:
+          widget.transaction?.id ??
+          DateTime.now().microsecondsSinceEpoch.toString(),      
       title: titleController.text.trim(),
       amount: double.parse(amountController.text.trim().replaceAll(',', '.')),
       type: selectedType,
@@ -67,7 +89,34 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           : noteController.text.trim(),
     );
 
-    Navigator.pop(context, transaction);
+    setState(() {
+      isSaving = true;
+      errorMessage = null;
+    });
+
+    try {
+      if (widget.transaction == null) {
+        await transactionService.addTransaction(transaction);
+      } else {
+        await transactionService.updateTransaction(transaction);
+      }
+
+      if (!mounted) return;
+
+      Navigator.pop(context, transaction);
+    } catch (_) {
+      if (!mounted) return;
+
+      setState(() {
+        errorMessage = 'İşlem kaydedilirken bir hata oluştu.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          isSaving = false;
+        });
+      }
+    }
   }
 
   @override
@@ -76,7 +125,11 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final categories = TransactionCategories.forType(selectedType);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('İşlem Ekle')),
+      appBar: AppBar(
+        title: Text(
+          widget.transaction == null ? 'İşlem Ekle' : 'İşlem Düzenle',
+        ),
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -88,7 +141,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Yeni İşlem',
+                    widget.transaction == null
+                        ? 'Yeni İşlem'
+                        : 'İşlemi Düzenle',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -216,12 +271,32 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
+
+                  if (errorMessage != null) ...[
+                    Text(
+                      errorMessage!,
+                      style: TextStyle(color: theme.colorScheme.error),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   SizedBox(
                     height: 52,
                     child: FilledButton.icon(
-                      onPressed: saveTransaction,
-                      icon: const Icon(Icons.save_outlined),
-                      label: const Text('Kaydet'),
+                      onPressed: isSaving ? null : saveTransaction,
+                      icon: isSaving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.save_outlined),
+                      label: Text(
+                        isSaving
+                          ? 'Kaydediliyor...'
+                          : widget.transaction == null
+                            ? 'Kaydet'
+                            : 'Güncelle',
+                      ),
                     ),
                   ),
                 ],
