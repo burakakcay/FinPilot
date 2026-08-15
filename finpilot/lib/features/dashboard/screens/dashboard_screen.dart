@@ -1,10 +1,8 @@
 import 'dart:async';
-
-import 'package:finpilot/features/auth/services/auth_service.dart';
-import 'package:finpilot/features/budgets/screens/budget_screen.dart';
 import 'package:finpilot/features/transactions/screens/add_transaction_screen.dart';
 import 'package:finpilot/features/transactions/services/transaction_service.dart';
 import 'package:finpilot/shared/models/transaction_model.dart';
+import 'package:finpilot/shared/widgets/app_navigation_layout.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -16,14 +14,12 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final AuthService authService = AuthService();
   final TransactionService transactionService = TransactionService();
   final List<TransactionModel> transactions = [];
 
   late final StreamSubscription<List<TransactionModel>>
   transactionsSubscription;
 
-  bool isLoading = false;
   String? hoveredTransactionId;
 
   @override
@@ -102,54 +98,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  // Firebase oturumunu kapatır; AuthGate aktifken Login ekranına dönülür.
-  Future<void> logout() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      await authService.logout();
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('FinPilot Dashboard'),
-        actions: [
-          IconButton(
-            tooltip: 'Bütçelerim',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => BudgetScreen()),
-              );
-            },
-            icon: const Icon(Icons.account_balance_wallet_outlined),
-          ),
-          TextButton.icon(
-            onPressed: isLoading ? null : logout,
-            icon: isLoading
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.logout),
-            label: const Text('Çıkış Yap'),
-          ),
-        ],
-      ),
+    return AppNavigationLayout(
+      selectedIndex: 0,
+      title: 'FinPilot Dashboard',
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Center(

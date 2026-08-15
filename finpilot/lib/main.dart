@@ -1,5 +1,7 @@
 import 'package:finpilot/features/auth/screens/auth_gate.dart';
+import 'package:finpilot/features/budgets/screens/budget_screen.dart';
 import 'package:finpilot/features/dashboard/screens/dashboard_screen.dart';
+import 'package:finpilot/features/goals/screens/goals_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +35,12 @@ class FinPilotApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
+
+      routes: {
+        '/dashboard': (context) => const DashboardScreen(),
+        '/budgets': (context) => BudgetScreen(),
+        '/goals':(context) => GoalsScreen(),
+      },
 
       // Oturum durumuna göre Login veya Dashboard ekranını gösterir.
       // home: const AuthGate(),

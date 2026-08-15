@@ -173,6 +173,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: passwordController,
                   obscureText: obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) {
+                    if (!isLoading) {
+                      login();
+                    }
+                  },
                   decoration: InputDecoration(
                     labelText: 'Şifre',
                     prefixIcon: const Icon(Icons.lock_outline),
@@ -191,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-
+                
                 const SizedBox(height: 8),
 
                 Align(

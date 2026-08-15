@@ -3,6 +3,7 @@ import 'package:finpilot/features/budgets/services/budget_service.dart';
 import 'package:finpilot/features/transactions/services/transaction_service.dart';
 import 'package:finpilot/shared/models/budget_model.dart';
 import 'package:finpilot/shared/models/transaction_model.dart';
+import 'package:finpilot/shared/widgets/app_navigation_layout.dart';
 import 'package:flutter/material.dart';
 
 class BudgetScreen extends StatelessWidget {
@@ -81,8 +82,9 @@ class BudgetScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Bütçelerim')),
+    return AppNavigationLayout(
+      selectedIndex: 1,
+      title: 'Bütçelerim',
       body: StreamBuilder<List<BudgetModel>>(
         stream: budgetService.watchBudgets(),
         builder: (context, budgetSnapshot) {
