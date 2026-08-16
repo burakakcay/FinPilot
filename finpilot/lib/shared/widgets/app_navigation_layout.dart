@@ -35,6 +35,7 @@ class _AppNavigationLayoutState extends State<AppNavigationLayout> {
       '/goals',
       '/reports',
       '/insights',
+      '/profile',
     ];
     final routeName = routeNames[index];
 
@@ -157,6 +158,11 @@ class _AppNavigationLayoutState extends State<AppNavigationLayout> {
                         icon: Icon(Icons.lightbulb_outline),
                         selectedIcon: Icon(Icons.lightbulb),
                         label: Text('İçgörüler'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.person_outline),
+                        selectedIcon: Icon(Icons.person),
+                        label: Text('Profil'),
                       ),
                     ],
                   ),
