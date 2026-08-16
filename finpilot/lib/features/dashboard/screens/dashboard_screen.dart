@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'package:finpilot/features/goals/services/goal_service.dart';
 import 'package:finpilot/features/transactions/screens/add_transaction_screen.dart';
 import 'package:finpilot/features/transactions/services/transaction_service.dart';
+import 'package:finpilot/shared/models/goal_model.dart';
 import 'package:finpilot/shared/models/transaction_model.dart';
 import 'package:finpilot/shared/widgets/app_navigation_layout.dart';
 import 'package:flutter/foundation.dart';
@@ -16,9 +18,12 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   final TransactionService transactionService = TransactionService();
   final List<TransactionModel> transactions = [];
+  final GoalService goalService = GoalService();
+  final List<GoalModel> goals = [];
 
   late final StreamSubscription<List<TransactionModel>>
   transactionsSubscription;
+  late final StreamSubscription<List<GoalModel>> goalsSubscription;
 
   String? hoveredTransactionId;
 
@@ -37,11 +42,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ..addAll(transactionsFromFirestore);
       });
     });
+    goalsSubscription = goalService.watchGoals().listen((goalsFromFirestore) {
+      if (!mounted) return;
+
+      setState(() {
+        goals
+          ..clear()
+          ..addAll(goalsFromFirestore);
+      });
+    });
   }
 
   @override
   void dispose() {
     transactionsSubscription.cancel();
+    goalsSubscription.cancel();
     super.dispose();
   }
 
@@ -61,6 +76,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // Mevcut bakiyeyi gelir ve gider farkından üretir.
   double get balance => totalIncome - totalExpense;
+
+  // Tüm tasarruf hedeflerindeki mevcut birikim toplamını hesaplar.
+  double get totalSavings {
+    return goals.fold(0, (total, goal) => total + goal.currentAmount);
+  }
 
   String formatMoney(double amount) {
     final formattedAmount = amount
@@ -148,7 +168,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     DashboardSummaryCard(
                       title: 'Tasarruf',
-                      amount: formatMoney(balance),
+                      amount: formatMoney(totalSavings),
                       icon: Icons.savings_outlined,
                     ),
                   ],
