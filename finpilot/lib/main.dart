@@ -26,8 +26,21 @@ Future<void> main() async {
 
 const bool bypassAuthentication = false;
 
-class FinPilotApp extends StatelessWidget {
+class FinPilotApp extends StatefulWidget {
   const FinPilotApp({super.key});
+
+  @override
+  State<FinPilotApp> createState() => _FinPilotAppState();
+}
+
+class _FinPilotAppState extends State<FinPilotApp> {
+  ThemeMode selectedThemeMode = ThemeMode.system;
+
+  void changeTheme(ThemeMode themeMode) {
+    setState(() {
+      selectedThemeMode = themeMode;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +50,7 @@ class FinPilotApp extends StatelessWidget {
 
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: selectedThemeMode,
 
       routes: {
         '/dashboard': (context) => const DashboardScreen(),
@@ -45,7 +58,10 @@ class FinPilotApp extends StatelessWidget {
         '/goals': (context) => GoalsScreen(),
         '/reports': (context) => ReportsScreen(),
         '/insights': (context) => InsightsScreen(),
-        '/profile': (context) => ProfileScreen(),
+        '/profile': (context) => ProfileScreen(
+          themeMode: selectedThemeMode,
+          onThemeModeChanged: changeTheme,
+        ),
       },
 
       // Oturum durumuna göre Login veya Dashboard ekranını gösterir.

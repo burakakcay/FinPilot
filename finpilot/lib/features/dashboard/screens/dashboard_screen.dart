@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:finpilot/core/theme/app_theme.dart';
 import 'package:finpilot/features/goals/services/goal_service.dart';
 import 'package:finpilot/features/transactions/screens/add_transaction_screen.dart';
 import 'package:finpilot/features/transactions/services/transaction_service.dart';
@@ -155,21 +156,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       title: 'Toplam Bakiye',
                       amount: formatMoney(balance),
                       icon: Icons.account_balance_wallet_outlined,
+                      accentColor: AppTheme.balanceAccent,
                     ),
                     DashboardSummaryCard(
                       title: 'Gelir',
                       amount: formatMoney(totalIncome),
                       icon: Icons.trending_up,
+                      accentColor: AppTheme.incomeAccent,
                     ),
                     DashboardSummaryCard(
                       title: 'Gider',
                       amount: formatMoney(totalExpense),
                       icon: Icons.trending_down,
+                      accentColor: AppTheme.expenseAccent,
                     ),
                     DashboardSummaryCard(
                       title: 'Tasarruf',
                       amount: formatMoney(totalSavings),
                       icon: Icons.savings_outlined,
+                      accentColor: AppTheme.savingsAccent,
                     ),
                   ],
                 ),
@@ -291,11 +296,13 @@ class DashboardSummaryCard extends StatelessWidget {
     required this.title,
     required this.amount,
     required this.icon,
+    required this.accentColor,
   });
 
   final String title;
   final String amount;
   final IconData icon;
+  final Color accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +315,15 @@ class DashboardSummaryCard extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              Icon(icon, color: theme.colorScheme.primary),
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: accentColor),
+              ),
               const SizedBox(width: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
