@@ -2,6 +2,7 @@ import 'package:finpilot/features/auth/screens/auth_gate.dart';
 import 'package:finpilot/features/budgets/screens/budget_screen.dart';
 import 'package:finpilot/features/dashboard/screens/dashboard_screen.dart';
 import 'package:finpilot/features/goals/screens/goals_screen.dart';
+import 'package:finpilot/features/insights/screens/insights_screen.dart';
 import 'package:finpilot/features/reports/screens/reports_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -42,6 +43,7 @@ class FinPilotApp extends StatelessWidget {
         '/budgets': (context) => BudgetScreen(),
         '/goals': (context) => GoalsScreen(),
         '/reports': (context) => ReportsScreen(),
+        '/insights': (context) => InsightsScreen(),
       },
 
       // Oturum durumuna göre Login veya Dashboard ekranını gösterir.

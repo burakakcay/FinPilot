@@ -124,7 +124,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return AppNavigationLayout(
       selectedIndex: 0,
-      title: 'FinPilot Dashboard',
+      title: '',
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Center(

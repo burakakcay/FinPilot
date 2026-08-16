@@ -29,7 +29,13 @@ class _AppNavigationLayoutState extends State<AppNavigationLayout> {
   void selectDestination(int index) {
     if (index == widget.selectedIndex) return;
 
-    const routeNames = ['/dashboard', '/budgets', '/goals', '/reports'];
+    const routeNames = [
+      '/dashboard',
+      '/budgets',
+      '/goals',
+      '/reports',
+      '/insights',
+    ];
     final routeName = routeNames[index];
 
     Navigator.pushReplacementNamed(context, routeName);
@@ -143,9 +149,15 @@ class _AppNavigationLayoutState extends State<AppNavigationLayout> {
                         label: Text('Hedeflerim'),
                       ),
                       NavigationRailDestination(
-                        icon: Icon(Icons.bar_chart_outlined), 
+                        icon: Icon(Icons.bar_chart_outlined),
                         selectedIcon: Icon(Icons.bar_chart),
-                        label: Text('Raporlar'))
+                        label: Text('Raporlar'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.lightbulb_outline),
+                        selectedIcon: Icon(Icons.lightbulb),
+                        label: Text('İçgörüler'),
+                      ),
                     ],
                   ),
                 ),
