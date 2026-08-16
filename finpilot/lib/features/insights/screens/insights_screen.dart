@@ -1,4 +1,6 @@
+import 'package:finpilot/features/budgets/services/budget_service.dart';
 import 'package:finpilot/features/transactions/services/transaction_service.dart';
+import 'package:finpilot/shared/models/budget_model.dart';
 import 'package:finpilot/shared/models/transaction_model.dart';
 import 'package:finpilot/shared/widgets/app_navigation_layout.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ class InsightsScreen extends StatelessWidget {
   InsightsScreen({super.key});
 
   final TransactionService transactionService = TransactionService();
+  final BudgetService budgetService = BudgetService();
 
   String formatMoney(double amount) {
     return '₺${amount.toStringAsFixed(2).replaceAll('.', ',')}';
@@ -53,6 +56,10 @@ class InsightsScreen extends StatelessWidget {
               .fold(0.0, (total, transaction) => total + transaction.amount);
 
           final balance = totalIncome - totalExpense;
+
+          final savingsRate = totalIncome == 0
+              ? 0.0
+              : (balance / totalIncome) * 100;
 
           final categoryTotals = <String, double>{};
 
@@ -115,6 +122,21 @@ class InsightsScreen extends StatelessWidget {
             );
           }
 
+          if (totalIncome > 0) {
+            final isPositive = savingsRate >= 20;
+
+            insights.add(
+              _InsightData(
+                title: 'Tasarruf oranı',
+                description: isPositive
+                    ? 'Gelirlerinizin yaklaşık %${savingsRate.toStringAsFixed(0)} kadarını tasarruf ediyorsunuz.'
+                    : 'Tasarruf oranınız yaklaşık %${savingsRate.toStringAsFixed(0)}. Bu oranı artırmak için gider kategorilerinizi gözden geçirebilirsiniz.',
+                icon: isPositive ? Icons.savings_outlined : Icons.trending_down,
+                color: isPositive ? Colors.green : Colors.orange,
+              ),
+            );
+          }
+
           if (totalIncome == 0 && totalExpense > 0) {
             insights.add(
               _InsightData(
@@ -128,41 +150,141 @@ class InsightsScreen extends StatelessWidget {
             );
           }
 
-          return ListView(
-            padding: const EdgeInsets.all(24),
-            children: [
-              Text(
-                'Otomatik Finansal Değerlendirme',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+          final now = DateTime.now();
+
+          final currentMonthExpense = transactions
+              .where(
+                (transaction) =>
+                    transaction.type == TransactionType.expense &&
+                    transaction.date.year == now.year &&
+                    transaction.date.month == now.month,
+              )
+              .fold(0.0, (total, transaction) => total + transaction.amount);
+
+          final previousMonth = DateTime(now.year, now.month - 1);
+
+          final previousMonthExpense = transactions
+              .where(
+                (transaction) =>
+                    transaction.type == TransactionType.expense &&
+                    transaction.date.year == previousMonth.year &&
+                    transaction.date.month == previousMonth.month,
+              )
+              .fold(0.0, (total, transaction) => total + transaction.amount);
+
+          if (previousMonthExpense > 0 &&
+              currentMonthExpense > previousMonthExpense * 1.2) {
+            insights.add(
+              _InsightData(
+                title: 'Harcama artışı',
+                description:
+                    'Bu ayki giderleriniz geçen aya göre belirgin şekilde arttı.',
+                icon: Icons.trending_up,
+                color: theme.colorScheme.error,
               ),
-              const SizedBox(height: 8),
-              Text(
-                'İşlemlerinize göre oluşturulan basit içgörüler.',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+            );
+          } else if (previousMonthExpense > 0 &&
+              currentMonthExpense < previousMonthExpense * 0.8) {
+            insights.add(
+              _InsightData(
+                title: 'Harcama azalışı',
+                description:
+                    'Bu ayki giderleriniz geçen aya göre azaldı. Bu trendi korumaya çalışın.',
+                icon: Icons.trending_down,
+                color: Colors.green,
               ),
-              const SizedBox(height: 24),
-              ...insights.map(
-                (insight) => Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(16),
-                    leading: Icon(insight.icon, color: insight.color, size: 32),
-                    title: Text(
-                      insight.title,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+            );
+          }
+
+          return StreamBuilder<List<BudgetModel>>(
+            stream: budgetService.watchBudgets(),
+            builder: (context, budgetSnapshot) {
+              if (budgetSnapshot.hasError) {
+                return const Center(
+                  child: Text('Bütçeler yüklenirken bir hata oluştu.'),
+                );
+              }
+
+              if (!budgetSnapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final budgets = budgetSnapshot.data!;
+              final currentDate = DateTime.now();
+
+              for (final budget in budgets) {
+                if (budget.month.year != currentDate.year ||
+                    budget.month.month != currentDate.month) {
+                  continue;
+                }
+
+                final spent = transactions
+                    .where(
+                      (transaction) =>
+                          transaction.type == TransactionType.expense &&
+                          transaction.category == budget.category &&
+                          transaction.date.year == budget.month.year &&
+                          transaction.date.month == budget.month.month,
+                    )
+                    .fold(
+                      0.0,
+                      (total, transaction) => total + transaction.amount,
+                    );
+
+                if (spent > budget.limit) {
+                  insights.add(
+                    _InsightData(
+                      title: 'Bütçe aşıldı',
+                      description:
+                          '${budget.category} bütçesini ${formatMoney(spent - budget.limit)} aştınız.',
+                      icon: Icons.warning_amber_outlined,
+                      color: theme.colorScheme.error,
                     ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(insight.description),
+                  );
+                }
+              }
+
+              return ListView(
+                padding: const EdgeInsets.all(24),
+                children: [
+                  Text(
+                    'Otomatik Finansal Değerlendirme',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              ),
-            ],
+                  const SizedBox(height: 8),
+                  Text(
+                    'İşlemlerinize göre oluşturulan basit içgörüler.',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  ...insights.map(
+                    (insight) => Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(16),
+                        leading: Icon(
+                          insight.icon,
+                          color: insight.color,
+                          size: 32,
+                        ),
+                        title: Text(
+                          insight.title,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(insight.description),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           );
         },
       ),
