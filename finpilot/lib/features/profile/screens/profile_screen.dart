@@ -1,4 +1,5 @@
 import 'package:finpilot/features/auth/services/auth_service.dart';
+import 'package:finpilot/features/profile/services/seed_data_service.dart';
 import 'package:finpilot/shared/widgets/app_navigation_layout.dart';
 import 'package:flutter/material.dart';
 
@@ -18,8 +19,10 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService authService = AuthService();
+  final SeedDataService seedDataService = SeedDataService();
 
   bool isSendingResetEmail = false;
+  bool isSeedingData = false;
 
   Future<void> sendResetEmail() async {
     final email = authService.currentUser?.email;
@@ -54,6 +57,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         setState(() {
           isSendingResetEmail = false;
+        });
+      }
+    }
+  }
+
+  Future<void> seedSampleData() async {
+    setState(() {
+      isSeedingData = true;
+    });
+
+    try {
+      await seedDataService.seedSampleData();
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Test verileri Firestore\'a yüklendi.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Test verileri yüklenemedi: $error')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          isSeedingData = false;
         });
       }
     }
@@ -161,6 +192,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                 },
               ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Geliştirici Araçları',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.cloud_upload_outlined),
+              title: const Text('Test Verilerini Yükle'),
+              subtitle: const Text(
+                'Örnek gelir, gider, bütçe ve hedef verileri ekler.',
+              ),
+              trailing: isSeedingData
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.chevron_right),
+              onTap: isSeedingData ? null : seedSampleData,
             ),
           ),
         ],

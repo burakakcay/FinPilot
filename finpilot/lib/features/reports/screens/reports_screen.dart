@@ -1,3 +1,5 @@
+import 'package:finpilot/features/reports/widgets/category_expense_pie_chart.dart';
+import 'package:finpilot/features/reports/widgets/monthly_income_expense_chart.dart';
 import 'package:finpilot/features/transactions/services/transaction_service.dart';
 import 'package:finpilot/shared/models/transaction_model.dart';
 import 'package:finpilot/shared/widgets/app_navigation_layout.dart';
@@ -101,6 +103,10 @@ class ReportsScreen extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 24),
+              MonthlyIncomeExpenseChart(transactions: transactions),
+              const SizedBox(height: 24),
+              CategoryExpensePieChart(categoryTotals: categoryTotals),
               const SizedBox(height: 32),
               Text(
                 'Kategori Bazlı Giderler',

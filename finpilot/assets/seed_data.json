@@ -1,0 +1,272 @@
+{
+  "transactions": [
+    {
+      "id": "seed_income_salary",
+      "title": "Maaş",
+      "amount": 25000,
+      "type": "income",
+      "category": "Maaş",
+      "date": "2026-08-01T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_income_extra",
+      "title": "Ek Gelir",
+      "amount": 3500,
+      "type": "income",
+      "category": "Ek Gelir",
+      "date": "2026-07-15T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_rent",
+      "title": "Kira",
+      "amount": 8000,
+      "type": "expense",
+      "category": "Kira",
+      "date": "2026-08-03T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_market",
+      "title": "Market alışverişi",
+      "amount": 2400,
+      "type": "expense",
+      "category": "Market",
+      "date": "2026-08-07T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_transport",
+      "title": "Ulaşım",
+      "amount": 900,
+      "type": "expense",
+      "category": "Ulaşım",
+      "date": "2026-07-20T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_food",
+      "title": "Yemek",
+      "amount": 1200,
+      "type": "expense",
+      "category": "Yemek",
+      "date": "2026-06-18T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_bill",
+      "title": "Fatura",
+      "amount": 1100,
+      "type": "expense",
+      "category": "Fatura",
+      "date": "2026-05-12T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_income_march_salary",
+      "title": "Maaş",
+      "amount": 22000,
+      "type": "income",
+      "category": "Maaş",
+      "date": "2026-03-01T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_income_april_salary",
+      "title": "Maaş",
+      "amount": 23000,
+      "type": "income",
+      "category": "Maaş",
+      "date": "2026-04-01T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_income_may_salary",
+      "title": "Maaş",
+      "amount": 24000,
+      "type": "income",
+      "category": "Maaş",
+      "date": "2026-05-01T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_income_june_salary",
+      "title": "Maaş",
+      "amount": 24500,
+      "type": "income",
+      "category": "Maaş",
+      "date": "2026-06-01T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_income_march_extra",
+      "title": "Ek Gelir",
+      "amount": 2000,
+      "type": "income",
+      "category": "Ek Gelir",
+      "date": "2026-03-18T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_income_august_bonus",
+      "title": "Prim",
+      "amount": 4500,
+      "type": "income",
+      "category": "Ek Gelir",
+      "date": "2026-08-12T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_march_rent",
+      "title": "Kira",
+      "amount": 7500,
+      "type": "expense",
+      "category": "Kira",
+      "date": "2026-03-03T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_march_market",
+      "title": "Market",
+      "amount": 1800,
+      "type": "expense",
+      "category": "Market",
+      "date": "2026-03-10T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_april_bill",
+      "title": "Fatura",
+      "amount": 950,
+      "type": "expense",
+      "category": "Fatura",
+      "date": "2026-04-12T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_april_education",
+      "title": "Kurs ücreti",
+      "amount": 1400,
+      "type": "expense",
+      "category": "Eğitim",
+      "date": "2026-04-20T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_may_rent",
+      "title": "Kira",
+      "amount": 7800,
+      "type": "expense",
+      "category": "Kira",
+      "date": "2026-05-03T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_may_fun",
+      "title": "Sinema",
+      "amount": 850,
+      "type": "expense",
+      "category": "Eğlence",
+      "date": "2026-05-22T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_june_market",
+      "title": "Market",
+      "amount": 2100,
+      "type": "expense",
+      "category": "Market",
+      "date": "2026-06-08T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_june_health",
+      "title": "Sağlık",
+      "amount": 650,
+      "type": "expense",
+      "category": "Sağlık",
+      "date": "2026-06-24T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_july_food",
+      "title": "Yemek",
+      "amount": 1350,
+      "type": "expense",
+      "category": "Yemek",
+      "date": "2026-07-08T09:00:00.000Z",
+      "note": "Test verisi"
+    },
+    {
+      "id": "seed_expense_august_bill",
+      "title": "Fatura",
+      "amount": 1250,
+      "type": "expense",
+      "category": "Fatura",
+      "date": "2026-08-10T09:00:00.000Z",
+      "note": "Test verisi"
+    }
+  ],
+  "budgets": [
+    {
+      "id": "seed_budget_market",
+      "category": "Market",
+      "limit": 4000,
+      "month": "2026-08-01T00:00:00.000Z"
+    },
+    {
+      "id": "seed_budget_food",
+      "category": "Yemek",
+      "limit": 2500,
+      "month": "2026-08-01T00:00:00.000Z"
+    },
+    {
+      "id": "seed_budget_transport",
+      "category": "Ulaşım",
+      "limit": 1500,
+      "month": "2026-08-01T00:00:00.000Z"
+    },
+    {
+      "id": "seed_budget_rent",
+      "category": "Kira",
+      "limit": 8500,
+      "month": "2026-08-01T00:00:00.000Z"
+    },
+    {
+      "id": "seed_budget_bills",
+      "category": "Fatura",
+      "limit": 2000,
+      "month": "2026-08-01T00:00:00.000Z"
+    },
+    {
+      "id": "seed_budget_health",
+      "category": "Sağlık",
+      "limit": 2500,
+      "month": "2026-08-01T00:00:00.000Z"
+    }
+  ],
+  "goals": [
+    {
+      "id": "seed_goal_computer",
+      "title": "Yeni bilgisayar",
+      "targetAmount": 40000,
+      "currentAmount": 8000,
+      "targetDate": "2027-06-01T00:00:00.000Z"
+    },
+    {
+      "id": "seed_goal_travel",
+      "title": "Yaz tatili",
+      "targetAmount": 25000,
+      "currentAmount": 6500,
+      "targetDate": "2027-07-15T00:00:00.000Z"
+    },
+    {
+      "id": "seed_goal_emergency",
+      "title": "Acil durum fonu",
+      "targetAmount": 60000,
+      "currentAmount": 12000,
+      "targetDate": "2028-01-01T00:00:00.000Z"
+    }
+  ]
+}

@@ -106,12 +106,14 @@ class _AppNavigationLayoutState extends State<AppNavigationLayout> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isCompact = screenWidth < 900;
 
     return Scaffold(
       body: Row(
         children: [
           SizedBox(
-            width: 92,
+            width: isCompact ? 72 : 92,
             child: Column(
               children: [
                 const SizedBox(height: 20),
@@ -131,7 +133,9 @@ class _AppNavigationLayoutState extends State<AppNavigationLayout> {
                 Expanded(
                   child: NavigationRail(
                     selectedIndex: widget.selectedIndex,
-                    labelType: NavigationRailLabelType.all,
+                    labelType: isCompact
+                        ? NavigationRailLabelType.none
+                        : NavigationRailLabelType.all,
                     onDestinationSelected: selectDestination,
                     destinations: const [
                       NavigationRailDestination(
@@ -184,7 +188,8 @@ class _AppNavigationLayoutState extends State<AppNavigationLayout> {
                               )
                             : const Icon(Icons.logout),
                       ),
-                      Text('Çıkış Yap', style: theme.textTheme.labelSmall),
+                      if (!isCompact)
+                        Text('Çıkış Yap', style: theme.textTheme.labelSmall),
                     ],
                   ),
                 ),
