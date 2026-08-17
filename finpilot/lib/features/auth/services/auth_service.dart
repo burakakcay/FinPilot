@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -27,6 +28,28 @@ class AuthService {
     );
 
     await userCredential.user?.updateDisplayName(name.trim());
+
+    final user = userCredential.user;
+
+    if (user != null) {
+      final userReference = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid);
+
+      await userReference.set({
+        'displayName': name.trim(),
+        'email': email.trim(),
+        'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      await userReference.collection('accounts').doc('main').set({
+        'name': 'Ana Hesap',
+        'type': 'cash',
+        'balance': 0.0,
+        'currency': 'TRY',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    }
 
     return userCredential;
   }

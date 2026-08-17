@@ -50,6 +50,9 @@ Selamlama yapma ve kendini tanıtma.
 Yanıtına doğrudan finansal değerlendirme ile başla.
 Gönderilen finansal özetteki sayıları mutlaka kullan.
 Markdown işaretleri kullanma.
+Finansal sağlık puanını da yorumla. Puanın güçlü ve zayıf yönlerini açıkla.
+Puanı yeniden hesaplama veya değiştirme; verilen puanı temel al.
+Gelecek ay tahmini gider bilgisini basit bir tahmin olarak yorumla; kesinlik iddiasında bulunma.
 
 Finansal özet:
 ${summary}

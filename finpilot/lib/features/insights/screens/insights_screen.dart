@@ -214,12 +214,16 @@ class InsightsScreen extends StatelessWidget {
               final budgets = budgetSnapshot.data!;
               final currentDate = DateTime.now();
               final budgetWarnings = <String>[];
+              var exceededBudgetCount = 0;
+              var activeBudgetCount = 0;
 
               for (final budget in budgets) {
                 if (budget.month.year != currentDate.year ||
                     budget.month.month != currentDate.month) {
                   continue;
                 }
+
+                activeBudgetCount++;
 
                 final spent = transactions
                     .where(
@@ -235,6 +239,8 @@ class InsightsScreen extends StatelessWidget {
                     );
 
                 if (spent > budget.limit) {
+                  exceededBudgetCount++;
+
                   budgetWarnings.add(
                     '${budget.category}: ${formatMoney(spent - budget.limit)} aşıldı',
                   );
@@ -249,6 +255,87 @@ class InsightsScreen extends StatelessWidget {
                     ),
                   );
                 }
+              }
+
+              final budgetComplianceScore = activeBudgetCount == 0
+                  ? 100.0
+                  : ((activeBudgetCount - exceededBudgetCount) /
+                            activeBudgetCount *
+                            100)
+                        .clamp(0, 100)
+                        .toDouble();
+
+              final savingsScore = savingsRate.clamp(0, 100).toDouble();
+
+              final balanceScore = totalIncome == 0
+                  ? 0.0
+                  : balance > 0
+                  ? 100.0
+                  : 25.0;
+
+              final financialHealthScore =
+                  (savingsScore * 0.4 +
+                          budgetComplianceScore * 0.35 +
+                          balanceScore * 0.25)
+                      .round();
+
+              final monthlyExpenses = <String, double>{};
+
+              for (final transaction in transactions) {
+                if (transaction.type != TransactionType.expense) continue;
+
+                final monthKey =
+                    '${transaction.date.year}-${transaction.date.month.toString().padLeft(2, '0')}';
+
+                monthlyExpenses.update(
+                  monthKey,
+                  (value) => value + transaction.amount,
+                  ifAbsent: () => transaction.amount,
+                );
+              }
+
+              final sortedMonthlyExpenses = monthlyExpenses.entries.toList()
+                ..sort((first, second) => second.key.compareTo(first.key));
+
+              final recentMonths = sortedMonthlyExpenses.take(3).toList();
+
+              final forecastExpense = recentMonths.isEmpty
+                  ? 0.0
+                  : recentMonths.fold<double>(
+                          0.0,
+                          (total, entry) => total + entry.value,
+                        ) /
+                        recentMonths.length;
+
+              final healthColor = financialHealthScore >= 70
+                  ? Colors.green
+                  : financialHealthScore >= 40
+                  ? Colors.orange
+                  : theme.colorScheme.error;
+
+              insights.insert(
+                0,
+                _InsightData(
+                  title: 'Finansal sağlık puanı',
+                  description:
+                      'Finansal durumunuz için hesaplanan puan: $financialHealthScore/100.',
+                  icon: Icons.favorite_outline,
+                  color: healthColor,
+                ),
+              );
+
+              if (forecastExpense > 0) {
+                insights.insert(
+                  1,
+                  _InsightData(
+                    title: 'Gelecek ay gider tahmini',
+                    description:
+                        'Son ${recentMonths.length} ayın ortalamasına göre gelecek ay yaklaşık '
+                        '${formatMoney(forecastExpense)} gider öngörülüyor.',
+                    icon: Icons.auto_graph_outlined,
+                    color: Colors.blue,
+                  ),
+                );
               }
 
               final expenseTrend = previousMonthExpense == 0
@@ -268,6 +355,8 @@ class InsightsScreen extends StatelessWidget {
                 highestExpenseAmount: highestCategory?.value ?? 0,
                 budgetWarnings: budgetWarnings,
                 expenseTrend: expenseTrend,
+                financialHealthScore: financialHealthScore,
+                forecastExpense: forecastExpense,
               );
 
               return ListView(
