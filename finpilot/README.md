@@ -1,17 +1,113 @@
-# finpilot
+# FinPilot
 
-A new Flutter project.
+Yapay zekâ destekli kişisel finans yönetimi ve karar destek sistemi.
 
-## Getting Started
+FinPilot; kullanıcıların gelir-gider işlemlerini takip etmesini, bütçe ve tasarruf hedefleri oluşturmasını, finansal raporlarını incelemesini ve temel finansal içgörüler almasını sağlar.
 
-This project is a starting point for a Flutter application.
+## Özellikler
 
-A few resources to get you started if this is your first Flutter project:
+- Firebase Authentication ile kayıt ve giriş
+- Oturumun açık tutulması
+- Gelir ve gider işlemleri
+- İşlem düzenleme ve silme
+- Bütçe oluşturma ve bütçe aşımı uyarıları
+- Tasarruf hedefleri
+- Dashboard finansal özeti
+- Aylık gelir-gider grafikleri
+- Kategori bazlı harcama grafiği
+- Otomatik finansal içgörüler
+- Gemini destekli AI finansal değerlendirme
+- Profil ve tema ayarları
+- Açık ve koyu tema
+- Responsive Flutter Web arayüzü
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Kullanılan Teknolojiler
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Flutter
+- Dart
+- Material 3
+- Firebase Authentication
+- Cloud Firestore
+- Node.js
+- Express.js
+- Google Gemini API
+
+## Gereksinimler
+
+- Flutter SDK
+- Dart SDK
+- Node.js
+- Firebase projesi
+- Firebase CLI
+
+## Kurulum
+
+Projeyi klonladıktan sonra Flutter bağımlılıklarını yükleyin:
+
+```bash
+flutter pub get
+```
+
+Firebase yapılandırmasının ardından uygulamayı çalıştırın:
+
+```bash
+flutter run -d edge --web-hostname localhost --web-port 5000
+```
+
+## AI Sunucusunu Çalıştırma
+
+AI servisi `ai_server` klasöründe bulunur.
+
+```bash
+cd ai_server
+npm install
+```
+
+`ai_server/.env` dosyasını oluşturun:
+
+```env
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+```
+
+AI sunucusunu başlatın:
+
+```bash
+node index.js
+```
+
+Sunucu `http://localhost:3000` adresinde çalışır. AI özelliğini kullanırken bu sunucunun açık olması gerekir.
+
+## Firebase Veri Yapısı
+
+```text
+users/{uid}/transactions
+users/{uid}/budgets
+users/{uid}/goals
+```
+
+Her kullanıcı yalnızca kendi finansal verilerine erişebilir.
+
+## Kontrol Komutları
+
+```bash
+dart format lib
+flutter analyze lib
+```
+
+## Test Edilen Akışlar
+
+- Kullanıcı kayıt ve giriş
+- Oturum açık tutma ve çıkış yapma
+- Yetkisiz route erişimi
+- Gelir ve gider ekleme, düzenleme ve silme
+- Bütçe ve bütçe aşımı kontrolü
+- Tasarruf hedefleri
+- Dashboard ve rapor grafikleri
+- Otomatik finansal içgörüler
+- Gemini AI değerlendirmesi
+- Profil ismi düzenleme
+- Açık/koyu tema geçişi
+
+## Proje Durumu
+
+FinPilot projesinin Flutter Web odaklı MVP sürümü tamamlanmıştır. Android desteği ilerleyen aşamalarda aynı Flutter kod tabanı üzerinden geliştirilebilir.
