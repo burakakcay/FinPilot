@@ -1,25 +1,25 @@
 {
-	"flutter": {
-		"platforms": {
-			"android": {
-				"default": {
-					"projectId": "finpilot-d17ee",
-					"appId": "1:487718155663:android:2074b285e6d2f388f007fa",
-					"fileOutput": "android/app/google-services.json"
-				}
-			},
-			"dart": {
-				"lib/firebase_options.dart": {
-					"projectId": "finpilot-d17ee",
-					"configurations": {
-						"android": "1:487718155663:android:2074b285e6d2f388f007fa",
-						"ios": "1:487718155663:ios:199d01d6062f445ef007fa",
-						"macos": "1:487718155663:ios:199d01d6062f445ef007fa",
-						"web": "1:487718155663:web:d89a7310cf5cc2dcf007fa",
-						"windows": "1:487718155663:web:c0da91151652bc41f007fa"
-					}
-				}
-			}
-		}
-	}
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "finpilot-d17ee",
+          "appId": "1:487718155663:android:2074b285e6d2f388f007fa",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "finpilot-d17ee",
+          "configurations": {
+            "android": "1:487718155663:android:2074b285e6d2f388f007fa",
+            "ios": "1:487718155663:ios:199d01d6062f445ef007fa",
+            "macos": "1:487718155663:ios:199d01d6062f445ef007fa",
+            "web": "1:487718155663:web:d89a7310cf5cc2dcf007fa",
+            "windows": "1:487718155663:web:c0da91151652bc41f007fa"
+          }
+        }
+      }
+    }
+  }
 }

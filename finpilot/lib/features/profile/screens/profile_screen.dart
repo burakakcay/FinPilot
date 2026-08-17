@@ -132,12 +132,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: const Text('E-posta'),
                     subtitle: Text(user?.email ?? 'E-posta bulunamadı'),
                   ),
-                  const Divider(),
-                  ListTile(
-                    leading: const Icon(Icons.fingerprint),
-                    title: const Text('Kullanıcı ID'),
-                    subtitle: Text(user?.uid ?? 'Kullanıcı bulunamadı'),
-                  ),
                 ],
               ),
             ),

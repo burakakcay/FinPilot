@@ -1,4 +1,5 @@
 import 'package:finpilot/features/auth/screens/auth_gate.dart';
+import 'package:finpilot/features/auth/screens/auth_guard.dart';
 import 'package:finpilot/features/budgets/screens/budget_screen.dart';
 import 'package:finpilot/features/dashboard/screens/dashboard_screen.dart';
 import 'package:finpilot/features/goals/screens/goals_screen.dart';
@@ -51,22 +52,21 @@ class _FinPilotAppState extends State<FinPilotApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: selectedThemeMode,
-
       routes: {
-        '/dashboard': (context) => const DashboardScreen(),
-        '/budgets': (context) => BudgetScreen(),
-        '/goals': (context) => GoalsScreen(),
-        '/reports': (context) => ReportsScreen(),
-        '/insights': (context) => InsightsScreen(),
-        '/profile': (context) => ProfileScreen(
-          themeMode: selectedThemeMode,
-          onThemeModeChanged: changeTheme,
+        '/': (context) =>
+            bypassAuthentication ? const DashboardScreen() : const AuthGate(),
+        '/dashboard': (context) => const AuthGuard(child: DashboardScreen()),
+        '/budgets': (context) => AuthGuard(child: BudgetScreen()),
+        '/goals': (context) => AuthGuard(child: GoalsScreen()),
+        '/reports': (context) => AuthGuard(child: ReportsScreen()),
+        '/insights': (context) => AuthGuard(child: InsightsScreen()),
+        '/profile': (context) => AuthGuard(
+          child: ProfileScreen(
+            themeMode: selectedThemeMode,
+            onThemeModeChanged: changeTheme,
+          ),
         ),
       },
-
-      // Oturum durumuna göre Login veya Dashboard ekranını gösterir.
-      // home: const AuthGate(),
-      home: bypassAuthentication ? const DashboardScreen() : const AuthGate(),
     );
   }
 }

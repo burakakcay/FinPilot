@@ -1,0 +1,12 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "FinPilot Web",
+			"request": "launch",
+			"type": "dart",
+			"deviceId": "edge",
+			"args": ["--web-hostname", "localhost", "--web-port", "5000"]
+		}
+	]
+}

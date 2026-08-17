@@ -1,4 +1,6 @@
 import 'package:finpilot/features/budgets/services/budget_service.dart';
+import 'package:finpilot/features/insights/models/ai_financial_summary.dart';
+import 'package:finpilot/features/insights/widgets/ai_insight_card.dart';
 import 'package:finpilot/features/transactions/services/transaction_service.dart';
 import 'package:finpilot/shared/models/budget_model.dart';
 import 'package:finpilot/shared/models/transaction_model.dart';
@@ -211,6 +213,7 @@ class InsightsScreen extends StatelessWidget {
 
               final budgets = budgetSnapshot.data!;
               final currentDate = DateTime.now();
+              final budgetWarnings = <String>[];
 
               for (final budget in budgets) {
                 if (budget.month.year != currentDate.year ||
@@ -232,6 +235,10 @@ class InsightsScreen extends StatelessWidget {
                     );
 
                 if (spent > budget.limit) {
+                  budgetWarnings.add(
+                    '${budget.category}: ${formatMoney(spent - budget.limit)} aşıldı',
+                  );
+
                   insights.add(
                     _InsightData(
                       title: 'Bütçe aşıldı',
@@ -244,9 +251,29 @@ class InsightsScreen extends StatelessWidget {
                 }
               }
 
+              final expenseTrend = previousMonthExpense == 0
+                  ? 'Yeterli veri yok'
+                  : currentMonthExpense > previousMonthExpense * 1.2
+                  ? 'Artıyor'
+                  : currentMonthExpense < previousMonthExpense * 0.8
+                  ? 'Azalıyor'
+                  : 'Dengeli';
+
+              final aiSummary = AiFinancialSummary(
+                totalIncome: totalIncome,
+                totalExpense: totalExpense,
+                balance: balance,
+                savingsRate: savingsRate,
+                highestExpenseCategory: highestCategory?.key,
+                highestExpenseAmount: highestCategory?.value ?? 0,
+                budgetWarnings: budgetWarnings,
+                expenseTrend: expenseTrend,
+              );
+
               return ListView(
                 padding: const EdgeInsets.all(24),
                 children: [
+                  AiInsightCard(summary: aiSummary.toPromptText()),
                   Text(
                     'Otomatik Finansal Değerlendirme',
                     style: theme.textTheme.headlineSmall?.copyWith(

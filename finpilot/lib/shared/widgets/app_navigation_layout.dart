@@ -84,10 +84,7 @@ class _AppNavigationLayoutState extends State<AppNavigationLayout> {
 
       if (!mounted) return;
 
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const AuthGate()),
-        (route) => false,
-      );
+      Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
     } catch (_) {
       if (!mounted) return;
 
