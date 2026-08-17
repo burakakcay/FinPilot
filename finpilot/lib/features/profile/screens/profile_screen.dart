@@ -90,10 +90,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> editDisplayName() async {
+    final user = authService.currentUser;
+    if (user == null) return;
+
+    final controller = TextEditingController(text: user.displayName ?? '');
+
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('İsmi Düzenle'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(
+              labelText: 'İsim Soyisim',
+              prefixIcon: Icon(Icons.person_outline),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Vazgeç'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final name = controller.text.trim();
+                if (name.isNotEmpty) {
+                  Navigator.pop(dialogContext, name);
+                }
+              },
+              child: const Text('Kaydet'),
+            ),
+          ],
+        );
+      },
+    );
+
+    controller.dispose();
+
+    if (newName == null || newName.isEmpty) return;
+
+    try {
+      await user.updateDisplayName(newName);
+      await user.reload();
+
+      if (!mounted) return;
+
+      setState(() {});
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('İsim başarıyla güncellendi.')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('İsim güncellenemedi.')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final user = authService.currentUser;
+
+    final displayName = user?.displayName?.trim();
+    final profileName = displayName == null || displayName.isEmpty
+        ? 'FinPilot Kullanıcısı'
+        : displayName;
+
     final isDarkMode =
         widget.themeMode == ThemeMode.dark ||
         (widget.themeMode == ThemeMode.system &&
@@ -114,23 +182,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 20),
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
+              padding: const EdgeInsets.all(24),
+              child: Row(
                 children: [
                   CircleAvatar(
-                    radius: 36,
+                    radius: 34,
                     backgroundColor: theme.colorScheme.primaryContainer,
                     child: Icon(
                       Icons.person_outline,
-                      size: 40,
+                      size: 38,
                       color: theme.colorScheme.onPrimaryContainer,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  ListTile(
-                    leading: const Icon(Icons.email_outlined),
-                    title: const Text('E-posta'),
-                    subtitle: Text(user?.email ?? 'E-posta bulunamadı'),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          profileName,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          user?.email ?? 'E-posta bulunamadı',
+                          style: theme.textTheme.bodyLarge,
+                        ),
+                        const SizedBox(height: 14),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer
+                                .withValues(alpha: 0.45),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.verified_outlined,
+                                size: 16,
+                                color: theme.colorScheme.primary,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Hesap aktif',
+                                style: TextStyle(
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  IconButton(
+                    tooltip: 'İsmi Düzenle',
+                    onPressed: editDisplayName,
+                    icon: const Icon(Icons.edit_outlined),
                   ),
                 ],
               ),

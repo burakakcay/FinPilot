@@ -17,13 +17,18 @@ class AuthService {
 
   // E-posta ve şifre ile yeni bir kullanıcı hesabı oluşturur.
   Future<UserCredential> register({
+    required String name,
     required String email,
     required String password,
   }) async {
-    return await _auth.createUserWithEmailAndPassword(
+    final userCredential = await _auth.createUserWithEmailAndPassword(
       email: email.trim(),
       password: password.trim(),
     );
+
+    await userCredential.user?.updateDisplayName(name.trim());
+
+    return userCredential;
   }
 
   // Aktif Firebase oturumunu kapatır.

@@ -1,4 +1,3 @@
-import 'package:finpilot/features/auth/screens/auth_gate.dart';
 import 'package:finpilot/features/auth/services/auth_service.dart';
 import 'package:flutter/material.dart';
 

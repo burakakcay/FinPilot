@@ -15,6 +15,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final nameController = TextEditingController();
 
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
@@ -27,17 +28,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    nameController.dispose();
     super.dispose();
   }
 
   Future<void> register() async {
+    final name = nameController.text.trim();
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    if (name.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       setState(() {
-        errorMessage = 'E-posta ve şifre boş bırakılamaz.';
+        errorMessage = 'İsim, e-posta ve şifre alanları boş bırakılamaz.';
       });
       return;
     }
@@ -55,7 +61,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      await authService.register(email: email, password: password);
+      await authService.register(name: name, email: email, password: password);
 
       if (!mounted) return;
 
@@ -122,6 +128,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
 
                 const SizedBox(height: 24),
+
+                TextField(
+                  controller: nameController,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(
+                    labelText: 'İsim Soyisim',
+                    hintText: 'Ad Soyad',
+                    prefixIcon: Icon(Icons.person_outline),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
 
                 TextField(
                   controller: emailController,
